@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rocketbook - read stories, comics, manga, novels & More!</title>
+    <!-- Favicon link added below -->
+    <link class="js-favicon" rel="icon" type="image/png" href="https://i.imgur.com/zYWmOAW.png">
+    <style>
+        /* Define custom retro pixel Arial fonts with local and file sources */
+        @font-face {
+            font-family: 'PixelArial';
+            src: url('PIXEARG_.TTF') format('truetype'), local('Arial');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'PixelArial';
+            src: url('PIXEAB__.TTF') format('truetype'), local('Arial Black'), local('Arial');
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            background-color: #bbbbbb;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end; /* Keeps panel bottom-aligned on larger viewports */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        /* The clean center white space - now fully expandable to support page scrolling */
+        .center-white-panel {
+            position: relative;
+            width: 90%;
+            max-width: 1500px;
+            background-color: #ffffff;
+            border-radius: 0; /* No rounded corners */
+            box-shadow: none; 
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            min-height: 95vh; /* Maintains the 5% gap look at the top */
+            margin-top: 5vh; /* Guarantees the top gap when scrolled to the top */
+            box-sizing: border-box;
+        }
+
+        /* A solid, basic orange chunk at the very top of the white panel */
+        .orange-top-chunk {
+            width: 100%;
+            height: 120px; 
+            background-color: #ff6b08; /* Clean basic orange */
+            flex-shrink: 0;
+            display: flex;
+            align-items: stretch; /* Stretches the children from top to bottom */
+            justify-content: space-between; /* Spreads out logo, tag-line, and login */
+            padding-left: 0; /* Flush to the left wall */
+            box-sizing: border-box;
+        }
+
+        /* Wrap logo and tagline in a left flex group */
+        .header-left-group {
+            display: flex;
+            align-items: stretch;
+        }
+
+        /* The white chunk stretched top-to-bottom on the left, now longer with less padding to let the logo be bigger */
+        .left-white-chunk {
+            width: 320px; 
+            background-color: #ffffff;
+            border-radius: 0; /* No rounding */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px; 
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        /* Forces the small logo image to scale up and fill the space cleanly */
+        .header-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Scales up while keeping perfect original proportions */
+            display: block;
+        }
+
+        /* Text container positioned in the middle-left of the orange header section */
+        .header-text-container {
+            display: flex;
+            align-items: center;
+            padding-left: 24px; /* More breathing room from the white logo chunk */
+            color: rgba(255, 255, 255, 0.95); /* Slightly softer white for less harsh contrast */
+            font-family: 'PixelArial', Arial, Helvetica, sans-serif;
+            font-size: 0.9rem; /* Slightly smaller to feel cleaner */
+            font-weight: bold; /* Bold Arial */
+            letter-spacing: -0.01em;
+            user-select: none;
+            max-width: 300px;
+            line-height: 1.3;
+        }
+
+        /* Retro Y2K Login Widget on the right side of the header */
+        .header-login-widget {
+            display: flex;
+            align-items: center;
+            padding-right: 32px; /* Increased padding for breathing room */
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        .y2k-link-col {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+
+        .y2k-link {
+            color: #ffffff;
+            font-family: 'PixelArial', Arial, Helvetica, sans-serif;
+            font-size: 12px; /* Slightly increased from 11px */
+            text-decoration: underline;
+            font-weight: normal;
+            opacity: 0.9;
+            transition: opacity 0.2s ease;
+        }
+
+        .y2k-link:hover {
+            opacity: 1;
+            color: #ffecd9;
+        }
+
+        .y2k-divider {
+            border-left: 1px dotted rgba(255, 255, 255, 0.6); /* Thinner dotted line */
+            height: 54px; /* Slightly taller divider to match the larger scale */
+            margin: 0 20px; /* Wider margins to unclutter the space */
+        }
+
+        /* Retro Form Grid layout styling */
+        .y2k-login-form {
+            border-collapse: collapse;
+            font-family: 'PixelArial', Arial, Helvetica, sans-serif;
+            color: #ffffff;
+            font-size: 12px; /* Slightly increased from 11px */
+        }
+
+        .y2k-login-form td {
+            padding: 3px 0; /* Slightly more vertical breathing room */
+            vertical-align: middle;
+        }
+
+        .y2k-label {
+            text-align: right;
+            padding-right: 10px; /* Better label spacing */
+            font-weight: normal;
+            font-size: 12px; /* Slightly increased from 11px */
+            opacity: 0.95;
+        }
+
+        .y2k-input {
+            width: 142px; /* Subtly widened from 130px */
+            height: 22px; /* Subtly heightened from 20px */
+            border: 1px solid #7f9db9; 
+            border-radius: 0; /* No rounded corners */
+            padding: 1px 4px;
+            font-family: 'PixelArial', Arial, Helvetica, sans-serif;
+            font-size: 12px; /* Slightly increased from 11px */
+            background-color: #ffffff;
+            color: #000000;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .y2k-btn {
+            height: 22px; /* Subtly heightened from 20px */
+            background-color: #dcdcdc;
+            border: 1px solid #7c7c7c;
+            border-top-color: #ffffff;
+            border-left-color: #ffffff;
+            border-radius: 0; /* No rounded corners */
+            color: #000000;
+            font-family: 'PixelArial', Arial, Helvetica, sans-serif;
+            font-size: 12px; /* Slightly increased from 11px */
+            font-weight: bold;
+            padding: 0 10px; /* Marginally widened padding for aesthetics */
+            cursor: pointer;
+            box-sizing: border-box;
+            margin-left: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .y2k-btn:active {
+            border: 1px solid #7c7c7c;
+            border-bottom-color: #ffffff;
+            border-right-color: #ffffff;
+            background-color: #cccccc;
+        }
+
+        .y2k-remember-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            color: #ffffff;
+            font-family: 'PixelArial', Arial, Helvetica, sans-serif;
+            font-size: 12px; /* Slightly increased from 11px */
+            margin-top: 3px;
+            opacity: 0.9;
+        }
+
+        .y2k-checkbox {
+            margin: 0;
+            cursor: pointer;
+            width: 14px; /* Subtly increased from 13px */
+            height: 14px; /* Subtly increased from 13px */
+        }
+
+        /* Subtle gray divider bar restored under the header */
+        .gray-sub-bar {
+            width: 100%;
+            height: 20px; 
+            background-color: #e2e8f0; 
+            flex-shrink: 0;
+        }
+
+        /* Vibrant orange bar (no gradient highlight) with flex support for dropdown navigation and search */
+        .orange-nav-bar {
+            width: 100%;
+            height: 45px; 
+            background-color: #ff6b08; /* Clean basic orange, flat layout */
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 100;
+            border-radius: 0; /* Sharp, flat linear look */
+        }
+
+        /* Dropdown Navigation Group */
+        .nav-dropdown-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-trigger-btn {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-family: 'PixelArial', Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            text-transform: uppercase;
+        }
+
+        .nav-trigger-btn::after {
+            content: " ▼";
+            font-size: 9px;
+            vertical-align: middle;
+        }
+
+        /* Dropdown Menu Container (Hidden by default, shown on hover) */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #ffffff;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.15);
+            border: 1px solid #ff6b08;
+            z-index: 200;
+            padding: 4px 0;
+            border-radius: 0; /* Sharp edges */
+        }
+
+        .nav-item:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-item {
+            color: #333333;
+            font-family: 'PixelArial', Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            padding: 8px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            transition: background-color 0.2s, color 0.2s;
+            border-radius: 0;
+        }
+
+        .dropdown-item:hover {
+            background-color: #ff6b08;
+            color: #ffffff;
+        }
+
+        /* Header search box container */
+        .nav-search-box {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .search-input {
+            width: 210px;
+            height: 26px;
+            border: 1px solid #d1d5db;
+            border-radius: 0; /* Perfectly flat, non-rounded square corner */
+            padding: 0 32px 0 10px;
+            font-family: 'PixelArial', Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            outline: none;
+            box-sizing: border-box;
+            background-color: #ffffff;
+        }
+
+        .search-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .search-icon-btn {
+            position: absolute;
+            right: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-icon-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: #ff6b08;
+        }
+
+        /* Main Content Panel - expanded to flow naturally into the page scroll */
+        .main-content-scrollable {
+            flex-grow: 1;
+            padding: 30px;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            box-sizing: border-box;
+            background-color: #fdfdfd;
+        }
+
+        /* Simplified, flat Welcome Banner without borders or background highlighting */
+        .welcome-banner {
+            background: none;
+            border: none;
+            padding: 0;
+            margin-bottom: 40px;
+            box-shadow: none;
+        }
+
+        .welcome-banner h1 {
+            margin: 0 0 10px 0;
+            font-size: 24px;
+            color: #ff6b08;
+            font-weight: 700;
+        }
+
+        .welcome-banner p {
+            margin: 0;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #4a5568;
+        }
+
+        /* Shelf Section Styling */
+        .bookshelves-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .shelf-container {
+            position: relative;
+            margin-bottom: 48px;
+            padding-bottom: 12px;
+        }
+
+        .shelf-header {
+            font-size: 14px;
+            font-weight: bold;
+            color: #ff6b08;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        /* The physical decorative shelf background */
+        .physical-shelf {
+            width: 100%;
+            height: 16px;
+            background: linear-gradient(to bottom, #d1d5db 0%, #a1a1a1 30%, #7c7c7c 100%);
+            border-bottom: 4px solid #4a5568;
+            box-shadow: 0 8px 12px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        /* Inside the empty shelf slot */
+        .empty-shelf-slot {
+            height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: #a0aec0;
+            font-style: italic;
+            border: 1px dashed #e2e8f0;
+            border-bottom: none;
+            background-color: rgba(247, 250, 252, 0.4);
+            margin-bottom: -1px; /* seamless connection with the shelf line */
+        }
+
+        /* Basic orange footer styled with regular Arial */
+        .app-footer {
+            width: 100%;
+            height: 40px;
+            background-color: #ff6b08;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            color: #ffffff;
+            user-select: none;
+        }
+
+        .app-footer a {
+            color: #ffffff;
+            text-decoration: underline;
+            font-weight: normal;
+            margin-left: 4px;
+        }
+
+        .app-footer a:hover {
+            color: #ffecd9;
+        }
+
+        /* Layout adaptation rules for smaller screens */
+        @media (max-width: 1140px) {
+            .header-text-container {
+                display: none; /* Hide middle tagline early to prevent overlaps */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .center-white-panel {
+                width: 95%;
+                min-height: 98vh; 
+                margin-top: 2vh;
+            }
+            .orange-top-chunk {
+                height: 110px;
+            }
+            .left-white-chunk {
+                width: 180px;
+                padding: 4px;
+            }
+            .y2k-input {
+                width: 105px; /* Adjusted slightly from 95px */
+            }
+            .header-login-widget {
+                padding-right: 12px;
+            }
+            .y2k-divider {
+                margin: 0 10px;
+            }
+            .orange-nav-bar {
+                height: auto;
+                flex-direction: column;
+                gap: 8px;
+                padding: 10px;
+            }
+            .nav-dropdown-group {
+                width: 100%;
+                justify-content: center;
+            }
+            .nav-search-box {
+                width: 100%;
+                justify-content: center;
+            }
+            .search-input {
+                width: 100%;
+                max-width: 280px;
+            }
+            .main-content-scrollable {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .y2k-link-col, .y2k-divider {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- The white panel, aligned directly to the bottom edge -->
+    <div class="center-white-panel">
+        
+        <!-- Solid orange header block at the top -->
+        <div class="orange-top-chunk">
+            
+            <div class="header-left-group">
+                <!-- A sharp, wider white chunk housing the enlarged logo -->
+                <div class="left-white-chunk">
+                    <img 
+                        class="header-logo" 
+                        src="https://i.imgur.com/Z4TF42P.png" 
+                        alt="Logo"
+                    >
+                </div>
+                <!-- Clean tag-line aligned vertically in the left middle of the orange space -->
+                <div class="header-text-container">
+                    read stories, comics, manga, novels & more!
+                </div>
+            </div>
+
+            <!-- Authentic 2000s login widget on the right -->
+            <div class="header-login-widget">
+                <div class="y2k-link-col">
+                    <a href="#" class="y2k-link">join now</a>
+                    <a href="#" class="y2k-link">forgot password?</a>
+                </div>
+                
+                <div class="y2k-divider"></div>
+
+                <table class="y2k-login-form">
+                    <tr>
+                        <td class="y2k-label">username:</td>
+                        <td colspan="2">
+                            <input type="text" class="y2k-input" autocomplete="username">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="y2k-label">password:</td>
+                        <td>
+                            <input type="password" class="y2k-input" autocomplete="current-password">
+                        </td>
+                        <td>
+                            <button type="submit" class="y2k-btn">sign in</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td colspan="2">
+                            <label class="y2k-remember-row">
+                                <input type="checkbox" class="y2k-checkbox">
+                                remember me
+                            </label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            
+        </div>
+
+        <!-- Clean, restored light gray separator line directly under the header -->
+        <div class="gray-sub-bar"></div>
+
+        <!-- Solid orange bar directly touching the header (no gray bar, no gradient highlight) -->
+        <div class="orange-nav-bar">
+            
+            <!-- Left side dropdown items -->
+            <div class="nav-dropdown-group">
+                <!-- Genres Dropdown -->
+                <div class="nav-item">
+                    <button class="nav-trigger-btn">Genres</button>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item">Adventure</a>
+                        <a href="#" class="dropdown-item">Fantasy</a>
+                        <a href="#" class="dropdown-item">Sci-Fi</a>
+                        <a href="#" class="dropdown-item">Mystery</a>
+                        <a href="#" class="dropdown-item">Comedy</a>
+                        <a href="#" class="dropdown-item">Slice of Life</a>
+                    </div>
+                </div>
+
+                <!-- Extra Community/Types dropdown -->
+                <div class="nav-item">
+                    <button class="nav-trigger-btn">More</button>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item">Comics</a>
+                        <a href="#" class="dropdown-item">Manga</a>
+                        <a href="#" class="dropdown-item">Novels</a>
+                        <a href="#" class="dropdown-item">Short Stories</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right side search box with search icon -->
+            <div class="nav-search-box">
+                <input type="text" class="search-input" placeholder="search stories, comics, manga...">
+                <button class="search-icon-btn" aria-label="Search">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Scrollable content panel utilizing Helvetica font -->
+        <div class="main-content-scrollable">
+            
+            <!-- Welcome Banner describing Rocketbook -->
+            <div class="welcome-banner">
+                <h1>what is rocketbook?</h1>
+                <p>welcome to rocketbook! authors can upload their books, comics, stories, you name it, and then users can read it and everyone's happy!</p>
+            </div>
+
+            <!-- Empty Bookshelves Section -->
+            <div class="bookshelves-section">
+                <div class="section-title">Explore Bookshelves</div>
+                
+                <!-- Fantasy & Adventure Shelf -->
+                <div class="shelf-container">
+                    <div class="shelf-header">Fantasy & Adventure</div>
+                    <div class="empty-shelf-slot">this shelf is currently empty.</div>
+                    <div class="physical-shelf"></div>
+                </div>
+
+                <!-- Comics & Manga Shelf -->
+                <div class="shelf-container">
+                    <div class="shelf-header">Comics & Manga</div>
+                    <div class="empty-shelf-slot">this shelf is currently empty.</div>
+                    <div class="physical-shelf"></div>
+                </div>
+
+                <!-- Sci-Fi & Mystery Shelf -->
+                <div class="shelf-container">
+                    <div class="shelf-header">Sci-Fi & Mystery</div>
+                    <div class="empty-shelf-slot">this shelf is currently empty.</div>
+                    <div class="physical-shelf"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Solid orange footer with a regular Arial font attribution link -->
+        <footer class="app-footer">
+            made with love by <a href="https://github.com/intergalaxity" target="_blank">intergalaxity</a>
+        </footer>
+
+    </div>
+
+</body>
+</html>
